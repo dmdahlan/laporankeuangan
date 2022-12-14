@@ -9,6 +9,9 @@ use App\Controllers\Auth\Migration;
 use App\Controllers\Auth\Role;
 use App\Controllers\Auth\User;
 use App\Controllers\Backupdb;
+use App\Controllers\Psp\Akunpsp;
+use App\Controllers\Psp\Bankpsp;
+use App\Controllers\Psp\Kaspsp;
 
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
@@ -63,6 +66,15 @@ $routes->post('auth/loglogin/history', [Loglogin::class, 'showdata']);
 $routes->get('backupdb', [Backupdb::class, 'index']);
 $routes->get('backupdb/backup', [Backupdb::class, 'backup']);
 
+// PSP
+$routes->resource('psp/akunpsp', [Akunpsp::class]);
+$routes->post('psp/akunpsp/data', [Akunpsp::class, 'showdata']);
+$routes->resource('psp/kaspsp', [Kaspsp::class]);
+$routes->post('psp/kaspsp/data', [Kaspsp::class, 'showdata']);
+$routes->post('psp/kaspsp/deleteall', [Kaspsp::class, 'deleteAll']);
+$routes->resource('psp/bankpsp', [Bankpsp::class]);
+$routes->post('psp/bankpsp/data', [Bankpsp::class, 'showdata']);
+$routes->post('psp/bankpsp/deleteall', [Bankpsp::class, 'deleteAll']);
 /*
  * --------------------------------------------------------------------
  * Additional Routing

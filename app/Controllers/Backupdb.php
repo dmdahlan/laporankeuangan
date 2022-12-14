@@ -18,8 +18,8 @@ class Backupdb extends BaseController
     {
         try {
             $tanggal = date('dmy');
-            $dump = new Mysqldump('mysql:host=localhost;dbname=3pbpn;port=3306', 'root', '');
-            $dump->start('F:backup/database/dbpsp' . $tanggal . '.sql');
+            $dump = new Mysqldump('mysql:host=localhost;dbname=lk;port=3306', 'root', '');
+            $dump->start('F:backup/database/laporankeuangan' . $tanggal . '.sql');
             $pesan = "Database berhasil dibackup!";
             session()->setFlashdata('sukses', $pesan);
         } catch (\Exception $e) {
