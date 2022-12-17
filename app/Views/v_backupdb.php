@@ -38,7 +38,10 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-3">
-                                    <a href="backupdb/backup" class="btn btn-primary">Click To Backup Database</a>
+                                    <form action="backupdb" method="post">
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-primary">Click To Backup Database</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

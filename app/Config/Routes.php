@@ -64,11 +64,13 @@ $routes->post('auth/migration/data', [Migration::class, 'showdata']);
 $routes->get('/auth/loglogin', [Loglogin::class, 'index']);
 $routes->post('auth/loglogin/history', [Loglogin::class, 'showdata']);
 $routes->get('backupdb', [Backupdb::class, 'index']);
-$routes->get('backupdb/backup', [Backupdb::class, 'backup']);
+$routes->post('backupdb', [Backupdb::class, 'backup']);
 
 // PSP
 $routes->resource('psp/akunpsp', [Akunpsp::class]);
 $routes->post('psp/akunpsp/data', [Akunpsp::class, 'showdata']);
+$routes->get('psp/akunpsp/md-import', [Akunpsp::class, 'modal']);
+
 $routes->resource('psp/kaspsp', [Kaspsp::class]);
 $routes->post('psp/kaspsp/data', [Kaspsp::class, 'showdata']);
 $routes->post('psp/kaspsp/deleteall', [Kaspsp::class, 'deleteAll']);

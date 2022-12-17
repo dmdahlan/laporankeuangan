@@ -87,7 +87,7 @@
             "processing": true,
             "serverSide": true,
             "lengthMenu": [10, 50, 100],
-            "order": [1, 'asc'],
+            "order": [1, 'desc'],
             "ajax": {
                 "url": 'kaspsp/data',
                 "method": 'post',

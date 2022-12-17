@@ -14,7 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="/assets/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/assets/adminlte/plugins/fontawesome-free-6.0.0/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/assets/adminlte/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="/assets/adminlte/style.css">
@@ -54,7 +54,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="/assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/assets/adminlte/dist/js/adminlte.min.js"></script>
-    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <?= $this->renderSection('js') ?>
     <?= $this->renderSection('pageScripts') ?>
 </body>

@@ -95,8 +95,8 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-end">
-                    <button type="submit" class="btn btn-primary btn-sm btn-save">Save</button>
-                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btn-sm btn-save"><i class="fas fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fa-solid fa-circle-xmark"></i> Close</button>
                 </div>
             </form>
         </div>
@@ -112,12 +112,12 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 beforeSend: function(e) {
-                    $('.btn-save').prop('disabled', true);
-                    $('.btn-save').html('<i class="fa fa-spin fa-spinner"></i>');
+                    $('.btn-save').prop('disabled', true)
+                    $('.btn-save').html('<i class="fa fa-spin fa-spinner"></i>')
                 },
                 complete: function() {
-                    $('.btn-save').prop('disabled', false);
-                    $('.btn-save').html('Save');
+                    $('.btn-save').prop('disabled', false)
+                    $('.btn-save').html('<i class="fas fa-save"></i> Save')
                 },
                 success: function(response) {
                     if (response.ok) {

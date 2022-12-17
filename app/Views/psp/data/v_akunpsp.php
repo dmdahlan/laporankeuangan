@@ -129,7 +129,7 @@
         e.preventDefault()
         $.ajax({
             method: "get",
-            url: "akunpsp/new",
+            url: "akunpsp/md-import",
             dataType: "json",
             success: function(response) {
                 if (response.ok) {
@@ -144,16 +144,16 @@
         })
     })
 
-    function edit(id) {
+    function edit(id_akun) {
         $.ajax({
             type: "get",
-            url: "role/" + id + "/edit",
+            url: "akunpsp/" + id_akun + "/edit",
             dataType: "json",
             success: function(response) {
                 if (response.ok) {
-                    $('#viewmodal').html(response.ok).show()
+                    $('.viewmodal').html(response.ok).show()
                     $('#modal-edit').modal('show')
-                    $('.modal-title').text('Edit Role')
+                    $('.modal-title').text('Edit No Akun')
                 }
             },
             error: function(xhr, thrownError) {
@@ -162,9 +162,9 @@
         });
     }
 
-    function hapus(id, name) {
+    function hapus(id_akun, no_akun) {
         Swal.fire({
-            title: `${name} <small>akan dihapus ?</small>`,
+            title: `${no_akun} <small>akan dihapus ?</small>`,
             html: 'Data yang terhapus tidak dapat dikembalikan lagi',
             icon: 'warning',
             showCancelButton: true,
@@ -176,7 +176,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     type: "post",
-                    url: "role/" + id,
+                    url: "akunpsp/" + id,
                     data: {
                         csrfToken: $('input[name=csrfToken]').val(),
                         _method: "delete",
@@ -187,7 +187,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
-                                html: `<strong>${name}</strong> ${response.ok}`,
+                                html: `<strong>${no_akun}</strong> ${response.ok}`,
                             })
                             $('input[name=csrfToken]').val(response.csrfToken)
                             reloadTable();
@@ -221,4 +221,7 @@
 <script src="/assets/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <!-- SweetAlert -->
 <script src="/assets/adminlte/plugins/sweetalert2/dist/sweetalert2.min.js"></script>
+<!-- Rupiah -->
+<script src="/assets/adminlte/plugins/autonumeric/dist/autoNumeric.js"></script>
+
 <?= $this->endsection() ?>

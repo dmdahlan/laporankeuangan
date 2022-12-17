@@ -32,10 +32,16 @@ class Kaspsp extends ResourceController
         $data = $this->transaksiModel->DataTableKas();
         $output = DataTable::of($data)
             ->addNumbering('no')
+            ->format('tgl_transaksi', function ($value) {
+                return tanggal($value);
+            })
             ->format('debet', function ($value) {
                 return rupiah($value);
             })
-            // ->setSearchableColumns(['no_akun', 'nama_akun', 'saldo_awal', 'dk_akun', 'ap_akun',  'ket_akun'])
+            ->format('kredit', function ($value) {
+                return rupiah($value);
+            })
+            ->setSearchableColumns(['no_bukti', 'uraian', 'akun_debet', 'akundebet.nama_akun', 'akun_kredit', 'akunkredit.nama_akun'])
             ->toJson(true);
         return $output;
     }

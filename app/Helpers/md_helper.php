@@ -50,12 +50,7 @@ function dateInv($date)
 {
     return $date == null ? null : date('d F Y', strtotime($date));
 }
-// function csrfName()
-// {
-//     return csrf_token();
-// }
-// function csrfHash()
-// {
-
-//     return csrf_hash();
-// }
+function inputAngka($value)
+{
+    return $value == null ? null : str_replace('.', '', $value);
+}
