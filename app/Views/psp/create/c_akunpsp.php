@@ -36,12 +36,10 @@
             $.ajax({
                 type: "post",
                 url: $(this).attr('action'),
-                data: data,
+                data: new FormData($('#simpan')[0]),
                 dataType: "json",
-                enctype: "mulitaprt/form-data",
                 processData: false,
                 contentType: false,
-                cache: false,
                 beforeSend: function(e) {
                     $('.btn-save').prop('disabled', true);
                     $('.btn-save').html('<i class="fa fa-spin fa-spinner"></i>');
@@ -63,10 +61,13 @@
                         $('input[name=csrfToken]').val(response.csrfToken)
                         reloadTable();
                     } else {
-                        for (let i = 0; i < response.name.length; i++) {
-                            $('[name="' + response.name[i] + '"]').addClass('is-invalid');
-                            $('[name="' + response.name[i] + '"]').next().text(response.errors[i]);
-                        }
+                        $.each(response.errors, function(key, value) {
+                            $('[name="' + key + '"]').addClass('is-invalid')
+                            $('[name="' + key + '"]').next().text(value)
+                            if (value === '') {
+                                $('[name="' + key + '"]').removeClass('is-invalid')
+                            }
+                        })
                     }
                 },
                 error: function(xhr, thrownError) {

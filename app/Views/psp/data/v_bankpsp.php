@@ -52,9 +52,7 @@
                                         <th>NO AKUN</th>
                                         <th>NAMA AKUN</th>
                                         <th>KREDIT</th>
-                                        <!-- <th>
-                                            <input type="checkbox" name="id_transaksi[]" id="checkall" style="margin-left: -3px;">
-                                        </th> -->
+                                        <th>OPSI</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -86,6 +84,12 @@
         table = $('#table').DataTable({
             "processing": true,
             "serverSide": true,
+            // initComplete: function() {
+            //     const api = this.api();
+            //     const info = api.page.info();
+            //     api.page(info.pages - 1).draw(false);
+            // },
+
             "lengthMenu": [10, 50, 100],
             "order": [1, 'desc'],
             "ajax": {
@@ -130,10 +134,10 @@
                 {
                     data: 'kredit',
                 },
-                // {
-                //     data: 'action',
-                //     orderable: false
-                // },
+                {
+                    data: 'action',
+                    orderable: false
+                },
             ],
         })
     }
@@ -164,16 +168,16 @@
         })
     })
 
-    function edit(id) {
+    function edit(id_transaksi) {
         $.ajax({
             type: "get",
-            url: "bankpsp/" + id + "/edit",
+            url: "bankpsp/" + id_transaksi + "/edit",
             dataType: "json",
             success: function(response) {
                 if (response.ok) {
-                    $('#viewmodal').html(response.ok).show()
+                    $('.viewmodal').html(response.ok).show()
                     $('#modal-edit').modal('show')
-                    $('.modal-title').text('Edit Data Bank')
+                    $('.modal-title').text('Edit Bank PSP')
                 }
             },
             error: function(xhr, thrownError) {
@@ -227,6 +231,11 @@
 <!-- DataTables -->
 <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="/assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Datepicker -->
+<link rel="stylesheet" href="/assets/adminlte/plugins/bootstrap-datepicker-1.9.0/css/bootstrap-datepicker3.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="/assets/adminlte/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="/assets/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 <!-- SweetAlert -->
 <link rel="stylesheet" href="/assets/adminlte/plugins/sweetalert2/dist/sweetalert2.min.css">
 <?= $this->endsection() ?>
@@ -237,6 +246,12 @@
 <script src="/assets/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="/assets/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="/assets/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<!-- Datepicker -->
+<script src="/assets/adminlte/plugins/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.js"></script>
+<!-- Select2 -->
+<script src="/assets/adminlte/plugins/select2/js/select2.full.min.js"></script>
+<!-- Rupiah -->
+<script src="/assets/adminlte/plugins/autonumeric/dist/autoNumeric.js"></script>
 <!-- SweetAlert -->
 <script src="/assets/adminlte/plugins/sweetalert2/dist/sweetalert2.min.js"></script>
 <?= $this->endsection() ?>

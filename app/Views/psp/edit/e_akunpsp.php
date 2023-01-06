@@ -102,10 +102,13 @@
                         $('input[name=csrfToken]').val(response.csrfToken)
                         reloadTable();
                     } else {
-                        for (let i = 0; i < response.name.length; i++) {
-                            $('[name="' + response.name[i] + '"]').addClass('is-invalid');
-                            $('[name="' + response.name[i] + '"]').next().text(response.errors[i]);
-                        }
+                        $.each(response.errors, function(key, value) {
+                            $('[name="' + key + '"]').addClass('is-invalid')
+                            $('[name="' + key + '"]').next().text(value)
+                            if (value === '') {
+                                $('[name="' + key + '"]').removeClass('is-invalid')
+                            }
+                        })
                         // $('input[name=csrfToken]').val(response.csrfToken)
                     }
                 },

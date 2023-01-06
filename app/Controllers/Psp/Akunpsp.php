@@ -86,7 +86,7 @@ class Akunpsp extends ResourceController
     public function create()
     {
         if ($this->request->isAJAX()) {
-            $this->_validateUpload();
+            $this->validasiimport();
             $file = $this->request->getFile('file_excel');
             $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             $spreadsheet = $reader->load($file);
@@ -98,7 +98,7 @@ class Akunpsp extends ResourceController
                 $data = [
                     'no_akun'        => $value[0],
                     'nama_akun'      => $value[1],
-                    'saldo_awal'     => $value[2],
+                    'saldo_awal'     => inputAngka($value[2]),
                     'dk_akun'        => $value[3],
                     'ap_akun'        => $value[4],
                     'created_id'     => user()->id,
@@ -146,7 +146,7 @@ class Akunpsp extends ResourceController
     public function update($id = null)
     {
         if ($this->request->isAJAX()) {
-            $this->_validate($id);
+            $this->validasi($id);
             $data =  [
                 'no_akun'       => $this->request->getPost('no_akun'),
                 'nama_akun'     => $this->request->getPost('nama_akun'),
@@ -195,125 +195,9 @@ class Akunpsp extends ResourceController
             return redirect()->to('/error');
         }
     }
-    public function modal()
+    public function validasi($id = null)
     {
-        if ($this->request->isAJAX()) {
-            $output = [
-                'ok'    => view('psp/create/c_aakunpsp'),
-            ];
-            echo json_encode($output);
-        } else {
-            return redirect()->to('/error');
-        };
-    }
-    public function import()
-    {
-        if ($this->request->isAJAX()) {
-            $this->_validateUpload();
-            $file = $this->request->getFile('file_excel');
-            $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-            $spreadsheet = $reader->load($file);
-            $kas = $spreadsheet->getSheetByName('no_akun')->toArray();
-            foreach ($kas as $key => $value) {
-                if ($key == 0) {
-                    continue;
-                }
-                $data = [
-                    'no_akun'        => $value[0],
-                    'nama_akun'      => $value[1],
-                    'saldo_awal'     => $value[2],
-                    'dk_akun'        => $value[3],
-                    'ap_akun'        => $value[4],
-                    'created_id'     => user()->id,
-                ];
-                $this->akunModel->insert($data);
-            }
-            $output = [
-                'ok'              => 'File berhasil diimport',
-                'csrfToken'       => csrf_hash(),
-            ];
-            echo json_encode($output);
-        } else {
-            return redirect()->to('/error');
-        };
-    }
-    public function _validateUpload()
-    {
-        if (!$this->validate($this->_getRulesValidationUpload())) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-
-            if ($validation->hasError('file_excel')) {
-                $data['name'][] = 'file_excel';
-                $data['errors'][] = $validation->getError('file_excel');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidationUpload()
-    {
-        $rulesValidation = [
-            'file_excel' => [
-                'rules' => "uploaded[file_excel]|ext_in[file_excel,xlsx]",
-                'errors' => [
-                    'uploaded'      => 'silahkan pilih file',
-                ]
-            ],
-        ];
-        return $rulesValidation;
-    }
-    public function _validate($id = null)
-    {
-        if (!$this->validate($this->_getRulesValidation($id))) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-
-            if ($validation->hasError('no_akun')) {
-                $data['name'][] = 'no_akun';
-                $data['errors'][] = $validation->getError('no_akun');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('nama_akun')) {
-                $data['name'][] = 'nama_akun';
-                $data['errors'][] = $validation->getError('nama_akun');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('saldo_awal')) {
-                $data['name'][] = 'saldo_awal';
-                $data['errors'][] = $validation->getError('saldo_awal');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('dk_akun')) {
-                $data['name'][] = 'dk_akun';
-                $data['errors'][] = $validation->getError('dk_akun');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('ap_akun')) {
-                $data['name'][] = 'ap_akun';
-                $data['errors'][] = $validation->getError('ap_akun');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidation($id = null)
-    {
-        $rulesValidation = [
+        $rules = [
             'no_akun' => [
                 'rules' => "required|alpha_numeric_punct|max_length[20]|is_unique[psp_akun.no_akun,id_akun,{$id}]",
                 'errors' => [
@@ -351,6 +235,46 @@ class Akunpsp extends ResourceController
                 ]
             ],
         ];
-        return $rulesValidation;
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'no_akun'     => $validation->getError('no_akun'),
+                'nama_akun'   => $validation->getError('nama_akun'),
+                'saldo_awal'  => $validation->getError('saldo_awal'),
+                'dk_akun'     => $validation->getError('dk_akun'),
+                'ap_akun'     => $validation->getError('ap_akun'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
+    }
+    public function validasiimport($id = null)
+    {
+        $rules = [
+            'file_excel' => [
+                'rules' => "uploaded[file_excel]|ext_in[file_excel,xlsx]",
+                'errors' => [
+                    'uploaded'      => 'silahkan pilih file',
+                ]
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'file_excel'        => $validation->getError('file_excel'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

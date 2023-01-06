@@ -129,7 +129,7 @@
         e.preventDefault()
         $.ajax({
             method: "get",
-            url: "akunpsp/md-import",
+            url: "akunpsp/new",
             dataType: "json",
             success: function(response) {
                 if (response.ok) {
@@ -176,7 +176,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     type: "post",
-                    url: "akunpsp/" + id,
+                    url: "akunpsp/" + id_akun,
                     data: {
                         csrfToken: $('input[name=csrfToken]').val(),
                         _method: "delete",

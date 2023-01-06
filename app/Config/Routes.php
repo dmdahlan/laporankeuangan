@@ -11,6 +11,8 @@ use App\Controllers\Auth\User;
 use App\Controllers\Backupdb;
 use App\Controllers\Psp\Akunpsp;
 use App\Controllers\Psp\Bankpsp;
+use App\Controllers\Psp\Bbpsp;
+use App\Controllers\Psp\Getdatapsp;
 use App\Controllers\Psp\Kaspsp;
 
 // Create a new instance of our RouteCollection class.
@@ -69,7 +71,8 @@ $routes->post('backupdb', [Backupdb::class, 'backup']);
 // PSP
 $routes->resource('psp/akunpsp', [Akunpsp::class]);
 $routes->post('psp/akunpsp/data', [Akunpsp::class, 'showdata']);
-$routes->get('psp/akunpsp/md-import', [Akunpsp::class, 'modal']);
+// Get PSP
+$routes->post('noakunpsp', [Getdatapsp::class, 'noakun']);
 
 $routes->resource('psp/kaspsp', [Kaspsp::class]);
 $routes->post('psp/kaspsp/data', [Kaspsp::class, 'showdata']);
@@ -77,6 +80,10 @@ $routes->post('psp/kaspsp/deleteall', [Kaspsp::class, 'deleteAll']);
 $routes->resource('psp/bankpsp', [Bankpsp::class]);
 $routes->post('psp/bankpsp/data', [Bankpsp::class, 'showdata']);
 $routes->post('psp/bankpsp/deleteall', [Bankpsp::class, 'deleteAll']);
+$routes->resource('psp/bbpsp', [Bbpsp::class]);
+$routes->post('psp/bbpsp/data', [Bbpsp::class, 'showdata']);
+$routes->post('psp/bbpsp/saldoawal', [Bbpsp::class, 'saloAwal']);
+$routes->post('psp/bbpsp/saldoakhir', [Bbpsp::class, 'saloAkhir']);
 /*
  * --------------------------------------------------------------------
  * Additional Routing
