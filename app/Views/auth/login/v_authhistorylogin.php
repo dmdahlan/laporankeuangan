@@ -45,7 +45,7 @@
                                     </select>
                                 </div>
                                 <div class="col">
-                                    <button class="btn btn-primary btn-sm rounded-circle" onclick="refresh()"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn btn-primary btn-sm rounded-circle" id="btn-refresh"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -129,12 +129,12 @@
     function reloadTable() {
         table.ajax.reload(null, false)
     }
-
-    function refresh() {
+    $('#btn-refresh').on('click', function(e) {
+        e.preventDefault()
         $('#status,#email').val('')
         reloadTable()
-    }
-    $('#status,#email').change(function(e) {
+    })
+    $('#status,#email').on('change', function(e) {
         e.preventDefault();
         table.ajax.reload();
     });

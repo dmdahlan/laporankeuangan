@@ -13,10 +13,10 @@ class User extends ResourceController
     protected $helpers = ['auth', 'md_helper'];
     public function __construct()
     {
-        $this->userModel           = new AuthuserModel();
-        $this->roleModel           = new AuthroleModel();
-        $this->config              = config('Auth');
-        $this->db                  = \Config\Database::connect();
+        $this->userModel = new AuthuserModel();
+        $this->roleModel = new AuthroleModel();
+        $this->config = config('Auth');
+        $this->db = \Config\Database::connect();
     }
 
     public function index()
@@ -36,8 +36,8 @@ class User extends ResourceController
             })
             ->add('action', function ($row) {
                 return '
-            <button type="button" class="btn btn-success btn-xs py-0" title="Role" onclick="editRole(' . $row->id . ')"><i class="fas fa-user-alt"></i></button>
-            <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" onclick="edit(' . $row->id . ')"><i class="fas fa-pencil-alt"></i></button>
+            <button type="button" class="btn btn-success btn-xs py-0" title="Role" id="btn-role" data-role="' . $row->id . '"><i class="fas fa-user-alt"></i></button>
+            <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" id="btn-edit" data-id="' . $row->id . '"><i class="fas fa-pencil-alt"></i></button>
             ';
             })
             ->edit('created_at', function ($row) {
@@ -83,7 +83,7 @@ class User extends ResourceController
     public function create()
     {
         if ($this->request->isAJAX()) {
-            $this->_validate();
+            $this->validasi();
             $data = [
                 'email'          => $this->request->getPost('email'),
                 'username'       => $this->request->getPost('username'),
@@ -141,7 +141,7 @@ class User extends ResourceController
     public function update($id = null)
     {
         if ($this->request->isAJAX()) {
-            $this->_validate($id);
+            $this->validasi($id);
             $cekPassword  = $this->request->getPost('password') . $this->request->getPost('pass_confirm');
             $passwordold  = $this->request->getPost('pass_confirmold');
             $data = [
@@ -211,49 +211,7 @@ class User extends ResourceController
             return redirect()->to('/error');
         };
     }
-    public function _validate($id = null)
-    {
-        if (!$this->validate($this->_getRulesValidation($id))) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-            $data['csrfToken'] = csrf_hash();
-
-            if ($validation->hasError('email')) {
-                $data['name'][] = 'email';
-                $data['errors'][] = $validation->getError('email');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('username')) {
-                $data['name'][] = 'username';
-                $data['errors'][] = $validation->getError('username');
-                $data['status'] = FALSE;
-            }
-            // if ($validation->hasError('old_password')) {
-            //     $data['name'][] = 'old_password';
-            //     $data['errors'][] = $validation->getError('old_password');
-            //     $data['status'] = FALSE;
-            // }
-            if ($validation->hasError('password')) {
-                $data['name'][] = 'password';
-                $data['errors'][] = $validation->getError('password');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('pass_confirm')) {
-                $data['name'][] = 'pass_confirm';
-                $data['errors'][] = $validation->getError('pass_confirm');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidation($id = null)
+    public function validasi($id = null)
     {
         $password  = $this->request->getPost('password') . $this->request->getPost('pass_confirm');
         // Strong Password
@@ -263,8 +221,7 @@ class User extends ResourceController
 
         $rulesPassword = $password == null ? 'matches[pass_confirm]' : 'required';
         $rulesPasswordConfirm = $password == null ? 'matches[password]' : 'required|matches[password]';
-
-        $rulesValidation = [
+        $rules = [
             'email' => [
                 'rules' => "required|valid_email|is_unique[users.email,id,{$id}]",
                 'errors' => [
@@ -299,6 +256,21 @@ class User extends ResourceController
                 ]
             ],
         ];
-        return $rulesValidation;
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'email'         => $validation->getError('email'),
+                'username'      => $validation->getError('username'),
+                // 'old_password'  => $validation->getError('old_password'),
+                'pass_confirm'  => $validation->getError('pass_confirm'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

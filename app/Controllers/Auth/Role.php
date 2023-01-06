@@ -34,9 +34,9 @@ class Role extends ResourceController
             ->addNumbering('no')
             ->add('action', function ($row) {
                 return '
-            <button type="button" class="btn btn-success btn-xs py-0" title="Akses" onclick="akses(' . "'" . $row->id . "'" . ',' . "'" . $row->name . "'" . ')"><i class="fas fa-check-double"></i></button>
-            <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" onclick="edit(' . $row->id . ')"><i class="fas fa-pencil-alt"></i></button>
-            <button type="button" class="btn btn-danger btn-xs py-0" title="Delete" onclick="hapus(' . "'" . $row->id . "'" . ',' . "'" . $row->name . "'" . ')"><i class="fas fa-trash-alt"></i></button>
+            <button type="button" class="btn btn-success btn-xs py-0 btn-edit" title="Akses" id="btn-modal-akses" data-id="' . $row->id . '" data-name="' . $row->name . '"><i class="fas fa-check-double"></i></button>
+            <button type="button" class="btn btn-warning btn-xs py-0 btn-edit" title="Edit" id="btn-edit" data-id="' . $row->id . '"><i class="fas fa-pencil-alt"></i></button>
+            <button type="button" class="btn btn-danger btn-xs py-0" title="Delete" id="btn-delete" data-id="' . $row->id . '" data-ket="' . $row->name . '"><i class="fas fa-trash-alt"></i></button>
             ';
             })
             ->setSearchableColumns(['name', 'description'])
@@ -78,12 +78,12 @@ class Role extends ResourceController
     public function create()
     {
         if ($this->request->isAJAX()) {
-            $this->_validate();
+            $this->validasi();
             $data = $this->request->getPost();
             $this->roleModel->insert($data);
             $output = [
                 'ok'             => 'Role berhasil disimpan',
-                'csrfToken'          => csrf_hash(),
+                'csrfToken'      => csrf_hash(),
             ];
             echo json_encode($output);
         } else {
@@ -120,7 +120,7 @@ class Role extends ResourceController
     public function update($id = null)
     {
         if ($this->request->isAJAX()) {
-            $this->_validate($id);
+            $this->validasi($id);
             $data = $this->request->getPost();
             $this->roleModel->update($id, $data);
             $output = [
@@ -178,8 +178,8 @@ class Role extends ResourceController
                 })
                 ->add('action', function ($row) {
                     return $this->roleModel->getRoleAkses($this->request->getPost('roleId'), $row->id) !== null ?
-                        '<div class="form-check"><input class="form-check-input" checked type="checkbox" onclick="access(' . "'" . $row->id . "'" . ',' . "'" . $this->request->getPost('roleId') . "'" . ')"></div>' :
-                        '<div class="form-check"><input class="form-check-input" type="checkbox" onclick="access(' . "'" . $row->id . "'" . ',' . "'" . $this->request->getPost('roleId') . "'" . ')"></div>';
+                        '<div class="form-check"><input class="form-check-input" checked type="checkbox" id="btn-akses" data-id="' . $row->id . '" data-roleid="' . $this->request->getPost('roleId') . '"></div>' :
+                        '<div class="form-check"><input class="form-check-input" type="checkbox" id="btn-akses" data-id="' . $row->id . '" data-roleid="' . $this->request->getPost('roleId') . '"></div>';
                 })
                 ->addNumbering('no')
                 ->setSearchableColumns(['menu.name', 'menu.description', 'menu.jns_menu'])
@@ -208,36 +208,9 @@ class Role extends ResourceController
             return redirect()->to('/error');
         }
     }
-    public function _validate($id = null)
+    public function validasi($id = null)
     {
-        if (!$this->validate($this->_getRulesValidation($id))) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-            $data['csrfToken'] = csrf_hash();
-
-            if ($validation->hasError('description')) {
-                $data['name'][] = 'description';
-                $data['errors'][] = $validation->getError('description');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('name')) {
-                $data['name'][] = 'name';
-                $data['errors'][] = $validation->getError('name');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidation($id = null)
-    {
-        $rulesValidation = [
+        $rules = [
             'name' => [
                 'rules' => "required|max_length[100]|is_unique[auth_groups.name,id,{$id}]",
                 'errors' => [
@@ -256,6 +229,19 @@ class Role extends ResourceController
             ],
 
         ];
-        return $rulesValidation;
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'name'        => $validation->getError('name'),
+                'description' => $validation->getError('description'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

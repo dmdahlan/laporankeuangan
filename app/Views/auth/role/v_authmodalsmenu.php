@@ -85,7 +85,10 @@
         })
     }
 
-    function access(id, roleId) {
+    $('body').on('click', '#btn-akses', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
+        const roleId = $(this).data('roleid')
         $.ajax({
             type: "post",
             url: "role/changeAccess",
@@ -111,6 +114,6 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
-    }
+        })
+    })
 </script>

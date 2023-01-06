@@ -53,8 +53,8 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#simpan').submit(function(e) {
-            e.preventDefault();
+        $('#simpan').on('submit', function(e) {
+            e.preventDefault()
             $.ajax({
                 type: "post",
                 url: $(this).attr('action'),

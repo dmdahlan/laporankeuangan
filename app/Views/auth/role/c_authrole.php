@@ -1,5 +1,5 @@
 <div class="modal fade" id="modal-create">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Default Modal</h5>
@@ -11,16 +11,16 @@
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label for="name">Role</label>
                                 <input type="text" class="form-control" name="name" id="name" placeholder="Role">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
-                                <label for="description">Nama Menu</label>
+                                <label for="description">Keterangan</label>
                                 <input type="text" class="form-control" name="description" id="description" placeholder="Keterangan">
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -37,7 +37,7 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#simpan').submit(function(e) {
+        $('#simpan').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
                 type: "post",
@@ -65,10 +65,13 @@
                         $('input[name=csrfToken]').val(response.csrfToken)
                         reloadTable();
                     } else {
-                        for (let i = 0; i < response.name.length; i++) {
-                            $('[name="' + response.name[i] + '"]').addClass('is-invalid');
-                            $('[name="' + response.name[i] + '"]').next().text(response.errors[i]);
-                        }
+                        $.each(response.errors, function(key, value) {
+                            $('[name="' + key + '"]').addClass('is-invalid')
+                            $('[name="' + key + '"]').next().text(value)
+                            if (value === '') {
+                                $('[name="' + key + '"]').removeClass('is-invalid')
+                            }
+                        })
                         // $('input[name=csrfToken]').val(response.csrfToken)
                     }
                 },

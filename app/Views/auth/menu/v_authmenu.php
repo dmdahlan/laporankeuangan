@@ -30,8 +30,8 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-12">
-                                    <button class="btn btn-success btn-sm rounded-circle" onclick="create()"><i class="fas fa-plus"></i></button>
-                                    <button class="btn btn-primary btn-sm rounded-circle" onclick="refresh()"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn btn-success btn-sm rounded-circle" id="btn-new"><i class="fas fa-plus"></i></button>
+                                    <button class="btn btn-primary btn-sm rounded-circle" id="btn-refresh"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -72,6 +72,11 @@
 <!-- Javascript -->
 <?= $this->section('pageScripts') ?>
 <script>
+    // $.ajaxSetup({
+    //     headers: {
+    //         'X-CSRF-TOKEN': $('meta[name="csrfToken"]').attr('content')
+    //     }
+    // })
     $(document).ready(function() {
         data();
     });
@@ -130,12 +135,13 @@
     function reloadTable() {
         table.ajax.reload(null, false)
     }
+    $('#btn-refresh').on('click', function(e) {
+        e.preventDefault()
+        reloadTable()
+    })
 
-    function refresh() {
-        table.ajax.reload(null, false)
-    }
-
-    function create() {
+    $('#btn-new').on('click', function(e) {
+        e.preventDefault()
         $.ajax({
             method: "get",
             url: "menu/new",
@@ -153,10 +159,12 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError)
             }
-        });
-    }
+        })
+    })
 
-    function edit(id) {
+    $('body').on('click', '#btn-edit', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
         $.ajax({
             type: "get",
             url: "menu/" + id + "/edit",
@@ -174,12 +182,15 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
-    }
+        })
+    })
 
-    function hapus(id, description) {
+    $('body').on('click', '#btn-delete', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
+        const ket = $(this).data('ket')
         Swal.fire({
-            title: `${description} <small>akan dihapus ?</small>`,
+            title: `${ket} <small>akan dihapus ?</small>`,
             html: 'Data yang terhapus tidak dapat dikembalikan lagi',
             icon: 'warning',
             showCancelButton: true,
@@ -202,7 +213,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
-                                html: `<strong>${description}</strong> ${response.ok}`,
+                                html: `<strong>${ket}</strong> ${response.ok}`,
                             })
                             $('input[name=csrfToken]').val(response.csrfToken)
                             reloadTable();
@@ -216,7 +227,7 @@
                 swal.fire("Batal", "Data batal dihapus", "warning");
             }
         })
-    }
+    })
 </script>
 <?= $this->endsection() ?>
 <!-- CSS -->

@@ -7,7 +7,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="migration/<?= $datalama->id ?>" method="post" class="simpan">
+            <form action="migration/<?= $datalama->id ?>" method="post" id="simpan">
                 <?= csrf_field() ?>
                 <input type="hidden" name="_method" value="PATCH">
                 <div class="modal-body">
@@ -67,7 +67,7 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.simpan').submit(function(e) {
+        $('#simpan').on('submit', function(e) {
             e.preventDefault();
             $.ajax({
                 type: "post",
@@ -95,10 +95,13 @@
                         $('input[name=csrfToken]').val(response.csrfToken)
                         reloadTable();
                     } else {
-                        for (let i = 0; i < response.name.length; i++) {
-                            $('[name="' + response.name[i] + '"]').addClass('is-invalid');
-                            $('[name="' + response.name[i] + '"]').next().text(response.errors[i]);
-                        }
+                        $.each(response.errors, function(key, value) {
+                            $('[name="' + key + '"]').addClass('is-invalid')
+                            $('[name="' + key + '"]').next().text(value)
+                            if (value === '') {
+                                $('[name="' + key + '"]').removeClass('is-invalid')
+                            }
+                        })
                         // $('input[name=csrfToken]').val(response.csrfToken)
                     }
                 },

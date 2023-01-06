@@ -30,8 +30,8 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-1">
-                                    <button class="btn btn-success btn-sm rounded-circle" onclick="create()"><i class="fas fa-plus"></i></button>
-                                    <button class="btn btn-primary btn-sm rounded-circle" onclick="refresh()"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn btn-success btn-sm rounded-circle" id="btn-new"><i class="fas fa-plus"></i></button>
+                                    <button class="btn btn-primary btn-sm rounded-circle" id="btn-refresh"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                                 <!-- <div class="col-2">
                                     <input type="text" id="email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
@@ -131,17 +131,17 @@
 
     function reloadTable() {
         table.ajax.reload(null, false)
-        $('#email').val('')
     }
-
-    function refresh() {
+    $('#btn-refresh').on('click', function(e) {
+        e.preventDefault()
         reloadTable()
-    }
+    })
     // $('#email').keyup(function(e) {
     //     table.ajax.reload(null, false)
     // });
 
-    function create() {
+    $('#btn-new').on('click', function(e) {
+        e.preventDefault()
         $.ajax({
             method: "get",
             url: "user/new",
@@ -156,10 +156,12 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError)
             }
-        });
-    }
+        })
+    })
 
-    function edit(id) {
+    $('body').on('click', '#btn-edit', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
         $.ajax({
             type: "get",
             url: "user/" + id + "/edit",
@@ -174,10 +176,13 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
-    }
+        })
+    })
 
-    function hapus(id, email) {
+    $('body').on('click', '#btn-delete', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
+        const email = $(this).data('email')
         Swal.fire({
             title: `${email} <small>akan dihapus ?</small>`,
             html: 'Data yang terhapus tidak dapat dikembalikan lagi',
@@ -216,9 +221,11 @@
                 swal.fire("Batal", "Data batal dihapus", "warning");
             }
         })
-    }
+    })
 
-    function editRole(id) {
+    $('body').on('click', '#btn-role', function(e) {
+        e.preventDefault()
+        const id = $(this).data('role')
         $.ajax({
             type: "post",
             url: "user/role",
@@ -241,8 +248,8 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
-    }
+        })
+    })
 </script>
 <?= $this->endsection() ?>
 <!-- CSS -->

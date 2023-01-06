@@ -35,8 +35,8 @@ class Menu extends ResourceController
             })
             ->add('action', function ($row) {
                 return '
-            <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" onclick="edit(' . $row->id . ')"><i class="fas fa-pencil-alt"></i></button>
-            <button type="button" class="btn btn-danger btn-xs py-0" title="Delete" onclick="hapus(' . "'" . $row->id . "'" . ',' . "'" . $row->description . "'" . ')"><i class="fas fa-trash-alt"></i></button>
+                <button type="button" class="btn btn-warning btn-xs py-0 btn-edit" title="Edit" id="btn-edit" data-id="' . $row->id . '"><i class="fas fa-pencil-alt"></i></button>
+                <button type="button" class="btn btn-danger btn-xs py-0" title="Delete" id="btn-delete" data-id="' . $row->id . '" data-ket="' . $row->description . '"><i class="fas fa-trash-alt"></i></button>
             ';
             })
             ->setSearchableColumns(['menu.name', 'menu.description', 'idmenu.description', 'menu.jns_menu', 'menu.url'])
@@ -50,7 +50,7 @@ class Menu extends ResourceController
      */
     public function show($id = null)
     {
-        //
+        return redirect()->to('/error');
     }
 
     /**
@@ -82,7 +82,7 @@ class Menu extends ResourceController
     public function create()
     {
         if ($this->request->isAJAX()) {
-            $this->_validate();
+            $this->validasi();
             $data = $this->request->getPost();
             $this->menuModel->insert($data);
             $output = [
@@ -126,7 +126,7 @@ class Menu extends ResourceController
     public function update($id = null)
     {
         if ($this->request->isAJAX()) {
-            $this->_validate($id);
+            $this->validasi($id);
             $data = $this->request->getPost();
             $this->menuModel->update($id, $data);
             $output = [
@@ -157,38 +157,12 @@ class Menu extends ResourceController
             return redirect()->to('/error');
         }
     }
-    public function _validate($id = null)
+    public function validasi($id = null)
     {
-        if (!$this->validate($this->_getRulesValidation($id))) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-            $data['csrfToken'] = csrf_hash();
-
-            if ($validation->hasError('description')) {
-                $data['name'][] = 'description';
-                $data['errors'][] = $validation->getError('description');
-                $data['status'] = FALSE;
-            }
-            if ($validation->hasError('name')) {
-                $data['name'][] = 'name';
-                $data['errors'][] = $validation->getError('name');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidation($id = null)
-    {
-        $rulesValidation = [
+        $rules = [
             'description' => [
-                'rules' => "required|max_length[100]|is_unique[auth_permissions.description,id,{$id}]",
+                // 'rules' => "required|max_length[100]|is_unique[auth_permissions.description,id,{$id}]",
+                'rules' => "required|max_length[100]",
                 'errors' => [
                     'required'      => 'nama menu harus diisi',
                     'is_unique'     => 'nama menu sudah ada',
@@ -196,14 +170,29 @@ class Menu extends ResourceController
                 ]
             ],
             'name' => [
-                'rules' => "required|max_length[100]|is_unique[auth_permissions.name,id,{$id}]",
+                // 'rules' => "required|max_length[100]|is_unique[auth_permissions.name,id,{$id}]",
+                'rules' => "required|max_length[100]",
                 'errors' => [
                     'required'      => 'menu harus diisi',
                     'is_unique'     => 'menu sudah ada',
                     'max_length'    => 'menu terlalu panjang'
                 ]
             ],
+
         ];
-        return $rulesValidation;
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'description' => $validation->getError('description'),
+                'name'        => $validation->getError('name'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

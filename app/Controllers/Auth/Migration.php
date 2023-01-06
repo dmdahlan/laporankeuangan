@@ -32,7 +32,7 @@ class Migration extends ResourceController
             ->addNumbering('no')
             ->add('action', function ($row) {
                 return '
-            <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" onclick="edit(' . $row->id . ')"><i class="fas fa-pencil-alt"></i></button> ';
+                <button type="button" class="btn btn-warning btn-xs py-0" title="Edit" id="btn-edit" data-id="' . $row->id . '"><i class="fas fa-pencil-alt"></i></button> ';
             })
             ->format('time', function ($value) {
                 return dateInt($value);
@@ -100,7 +100,7 @@ class Migration extends ResourceController
     public function update($id = null)
     {
         if ($this->request->isAJAX()) {
-            $this->_validate();
+            $this->validasi();
             $data = $this->request->getPost();
             $this->migrationModel->update($id, $data);
             $output = [
@@ -122,31 +122,9 @@ class Migration extends ResourceController
     {
         //
     }
-    public function _validate()
+    public function validasi($id = null)
     {
-        if (!$this->validate($this->_getRulesValidation())) {
-            $validation = \Config\Services::validation();
-
-            $data = [];
-            $data['errors'] = [];
-            $data['name'] = [];
-            $data['status'] = TRUE;
-            $data['csrfToken'] = csrf_hash();
-
-            if ($validation->hasError('batch')) {
-                $data['name'][] = 'batch';
-                $data['errors'][] = $validation->getError('batch');
-                $data['status'] = FALSE;
-            }
-            if ($data['status'] === FALSE) {
-                echo json_encode($data);
-                exit();
-            }
-        }
-    }
-    public function _getRulesValidation()
-    {
-        $rulesValidation = [
+        $rules = [
             'batch' => [
                 'rules' => 'required|integer',
                 'errors' => [
@@ -156,6 +134,18 @@ class Migration extends ResourceController
             ],
 
         ];
-        return $rulesValidation;
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'batch'     => $validation->getError('batch'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

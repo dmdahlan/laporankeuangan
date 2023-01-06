@@ -31,7 +31,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-12">
-                                    <button class="btn btn-primary btn-sm rounded-circle" onclick="refresh()"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="btn btn-primary btn-sm rounded-circle" id="btn-refresh"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -125,12 +125,14 @@
     function reloadTable() {
         table.ajax.reload(null, false)
     }
-
-    function refresh() {
+    $('#btn-refresh').on('click', function(e) {
+        e.preventDefault()
         reloadTable()
-    }
+    })
 
-    function edit(id) {
+    $('body').on('click', '#btn-edit', function(e) {
+        e.preventDefault()
+        const id = $(this).data('id')
         $.ajax({
             type: "get",
             url: "migration/" + id + "/edit",
@@ -145,8 +147,8 @@
             error: function(xhr, thrownError) {
                 alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
-    }
+        })
+    })
 </script>
 <?= $this->endsection() ?>
 <!-- CSS -->
