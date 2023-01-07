@@ -12,7 +12,7 @@ class Bbpsp extends ResourceController
     protected $helpers = ['md_helper'];
     public function __construct()
     {
-        $db = \Config\Database::connect();
+        $this->db = \Config\Database::connect();
     }
     /**
      * Return an array of resource objects, themselves in array format
@@ -28,6 +28,7 @@ class Bbpsp extends ResourceController
     }
     public function showdata()
     {
+        $this->validasi();
         $db = \Config\Database::connect();
         $model = new TransaksiModel();
         $akun = $this->request->getPost('noakun');
@@ -60,31 +61,25 @@ class Bbpsp extends ResourceController
             ->toJson(true);
         return $output;
     }
-    public function saloAwal()
+    public function ceksaldo()
     {
         if ($this->request->isAJAX()) {
-            $db = \Config\Database::connect();
-            $noakun = $this->request->getPost('noakun');
+            // $this->validasi();
+            $tglawal    = $this->request->getPost('tglawal');
+            $tglakhir   = $this->request->getPost('tglakhir');
+            $noakun     = $this->request->getPost('noakun');
+            $debetold   = $this->db->table('psp_transaksi')->selectSum('debet')->where('akun_debet', $noakun)->where('tgl_transaksi <', datefilter($tglawal))->get()->getRow()->debet;
+            $kreditold  = $this->db->table('psp_transaksi')->selectSum('kredit')->where('akun_kredit', $noakun)->where('tgl_transaksi <', datefilter($tglawal))->get()->getRow()->kredit;
+            $saldoawal  = $this->db->table('psp_akun')->where('no_akun', $noakun)->get()->getRow()->saldo_awal + $debetold - $kreditold;
+            $debet      = $this->db->table('psp_transaksi')->selectSum('debet')->where('akun_debet', $noakun)->where('tgl_transaksi >=', datefilter($tglawal))->where('tgl_transaksi <=', datefilter($tglakhir))->get()->getRow()->debet;
+            $kredit     = $this->db->table('psp_transaksi')->selectSum('kredit')->where('akun_kredit', $noakun)->where('tgl_transaksi >=', datefilter($tglawal))->where('tgl_transaksi <=', datefilter($tglakhir))->get()->getRow()->kredit;
+            $saldoakhir = intval($saldoawal) + intval($debet) - intval($kredit);
             $output = [
-                'saldo'      => $db->table('psp_akun')->where('no_akun', $noakun)->get()->getRow(),
-                csrf_token() => csrf_hash(),
-            ];
-            echo json_encode($output);
-        } else {
-            return redirect()->to('/error');
-        };
-    }
-    public function saloAkhir()
-    {
-        if ($this->request->isAJAX()) {
-            $db = \Config\Database::connect();
-            $noakun = $this->request->getPost('noakun');
-            $saldoawal = $db->table('psp_akun')->where('no_akun', $noakun)->get()->getRow()->saldo_awal;
-            $debet = $db->table('psp_transaksi')->selectSum('debet')->where('akun_debet', $noakun)->get()->getRow()->debet;
-            $kredit = $db->table('psp_transaksi')->selectSum('kredit')->where('akun_kredit', $noakun)->get()->getRow()->kredit;
-            $output = [
-                'saldo'      => intval($saldoawal) + intval($debet) - intval($kredit),
-                csrf_token() => csrf_hash(),
+                'saldoawal'      => $saldoawal == null ? 0 : $saldoawal,
+                'debet'          => $debet == null ? 0 : $debet,
+                'kredit'         => $kredit == null ? 0 : $kredit,
+                'saldoakhir'     => $saldoakhir == 0 ? 0 : $saldoakhir,
+                csrf_token()     => csrf_hash(),
             ];
             echo json_encode($output);
         } else {
@@ -149,5 +144,34 @@ class Bbpsp extends ResourceController
     public function delete($id = null)
     {
         //
+    }
+    public function validasi()
+    {
+        $rules = [
+            'noakun' => [
+                'rules' => "required",
+            ],
+            'tglawal' => [
+                'rules' => "required",
+            ],
+            'tglakhir' => [
+                'rules' => "required",
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            $validation = \Config\Services::validation();
+            $errors = [
+                'noakun'        => $validation->getError('noakun'),
+                'tglawal'       => $validation->getError('tglawal'),
+                'tglakhir'      => $validation->getError('tglakhir'),
+            ];
+            $output = [
+                'status'    => FALSE,
+                'errors'    => $errors,
+                'csrfToken' => csrf_hash()
+            ];
+            echo json_encode($output);
+            exit();
+        }
     }
 }

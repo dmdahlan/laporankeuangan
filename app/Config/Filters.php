@@ -40,12 +40,12 @@ class Filters extends BaseConfig
     public $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf' => [
-            //     'except' =>
-            //     [
-            //         'noakunpsp', 'bbpsp/data',
-            //     ],
-            // ],
+            'csrf' => [
+                'except' =>
+                [
+                    'noakunpsp', 'psp/akunpsp/data', 'psp/kaspsp/data', 'psp/bankpsp/data', 'psp/bbpsp/data', 'psp/bbpsp/ceksaldo',
+                ],
+            ],
             // 'invalidchars',
             'login' => [
                 'except' => ['login*', 'register*', 'forgot*', 'reset-password*', 'activate-account*', 'resend-activate-account*']

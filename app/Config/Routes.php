@@ -68,12 +68,11 @@ $routes->post('auth/loglogin/history', [Loglogin::class, 'showdata']);
 $routes->get('backupdb', [Backupdb::class, 'index']);
 $routes->post('backupdb', [Backupdb::class, 'backup']);
 
+// Get PSP
+$routes->post('noakunpsp', [Getdatapsp::class, 'noakun']);
 // PSP
 $routes->resource('psp/akunpsp', [Akunpsp::class]);
 $routes->post('psp/akunpsp/data', [Akunpsp::class, 'showdata']);
-// Get PSP
-$routes->post('noakunpsp', [Getdatapsp::class, 'noakun']);
-
 $routes->resource('psp/kaspsp', [Kaspsp::class]);
 $routes->post('psp/kaspsp/data', [Kaspsp::class, 'showdata']);
 $routes->post('psp/kaspsp/deleteall', [Kaspsp::class, 'deleteAll']);
@@ -82,8 +81,7 @@ $routes->post('psp/bankpsp/data', [Bankpsp::class, 'showdata']);
 $routes->post('psp/bankpsp/deleteall', [Bankpsp::class, 'deleteAll']);
 $routes->resource('psp/bbpsp', [Bbpsp::class]);
 $routes->post('psp/bbpsp/data', [Bbpsp::class, 'showdata']);
-$routes->post('psp/bbpsp/saldoawal', [Bbpsp::class, 'saloAwal']);
-$routes->post('psp/bbpsp/saldoakhir', [Bbpsp::class, 'saloAkhir']);
+$routes->post('psp/bbpsp/ceksaldo', [Bbpsp::class, 'ceksaldo']);
 /*
  * --------------------------------------------------------------------
  * Additional Routing

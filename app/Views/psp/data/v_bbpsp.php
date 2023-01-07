@@ -28,25 +28,28 @@
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <div class="row">
-                                <div class="col-1">
+                                <div class="col-md-1">
                                     <input type="text" id="tglawal" placeholder="Tgl awal" class="form-control tanggal form-control-sm" type="text" autocomplete="off">
                                 </div>
-                                <div class="col-1">
+                                <div class="col-md-1">
                                     <input type="text" id="tglakhir" placeholder="Tgl akhir" class="form-control tanggal form-control-sm" type="text" autocomplete="off">
                                 </div>
-                                <div class="col-4">
+                                <div class="col-md-3">
                                     <select name="noakun" id="noakun" class="form-control form-control-sm"></select>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-md">
                                     <input type="text" class="form-control form-control-sm" name="saldoawal" id="saldoawal" placeholder="Saldo Awal" readonly>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-md">
+                                    <input type="text" class="form-control form-control-sm" name="debet" id="debet" placeholder="Debet" readonly>
+                                </div>
+                                <div class="col-md">
+                                    <input type="text" class="form-control form-control-sm" name="kredit" id="kredit" placeholder="Kredit" readonly>
+                                </div>
+                                <div class="col-md">
                                     <input type="text" class="form-control form-control-sm" name="saldoakhir" id="saldoakhir" placeholder="Saldo Akhir" readonly>
                                 </div>
-                                <div class="col-1">
-                                    <button class="btn btn-primary rounded-circle btn-sm" id="btn-filter"><i class="fa fa-search"></i></button>
-                                    <!-- <button class="btn btn-primary btn-sm rounded-circle" id="btn-refresh"><i class="fas fa-sync-alt"></i></button> -->
-                                </div>
+                                <button class="btn btn-primary rounded-circle btn-sm" id="btn-filter"><i class="fa fa-search"></i></button>
                             </div>
                         </div>
                         <!-- /.card-header -->
@@ -89,8 +92,7 @@
                 text: 'Nomor akun tidak boleh kosong',
             })
         } else {
-            saldoAwal()
-            saldoAkhir()
+            saldo()
             $('.card-body').prop('hidden', true);
             $('#table').DataTable().clear().destroy()
             table = $('#table').DataTable({
@@ -180,42 +182,24 @@
         });
     }
 
-    function saldoAwal() {
-        const noakun = $('#noakun').val()
+    function saldo() {
         $.ajax({
             type: "post",
-            url: "bbpsp/saldoawal",
+            url: "bbpsp/ceksaldo",
             data: {
                 csrfToken: $('input[name=csrfToken]').val(),
-                noakun: $('#noakun').val()
+                noakun: $('#noakun').val(),
+                tglawal: $('#tglawal').val(),
+                tglakhir: $('#tglakhir').val(),
             },
             dataType: "json",
             success: function(response) {
-                if (response.saldo) {
-                    $('#saldoawal').val(rupiah(response.saldo.saldo_awal))
+                if (response) {
                     $('input[name=csrfToken]').val(response.csrfToken)
-                }
-            },
-            error: function(xhr, thrownError) {
-                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-            }
-        })
-    }
-
-    function saldoAkhir() {
-        const noakun = $('#noakun').val()
-        $.ajax({
-            type: "post",
-            url: "bbpsp/saldoakhir",
-            data: {
-                csrfToken: $('input[name=csrfToken]').val(),
-                noakun: $('#noakun').val()
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.saldo) {
-                    $('#saldoakhir').val(rupiah(response.saldo))
-                    $('input[name=csrfToken]').val(response.csrfToken)
+                    $('#saldoawal').val(rupiah(response.saldoawal))
+                    $('#debet').val(rupiah(response.debet))
+                    $('#kredit').val(rupiah(response.kredit))
+                    $('#saldoakhir').val(rupiah(response.saldoakhir))
                 }
             },
             error: function(xhr, thrownError) {
