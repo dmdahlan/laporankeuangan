@@ -14,6 +14,7 @@ use App\Controllers\Psp\Bankpsp;
 use App\Controllers\Psp\Bbpsp;
 use App\Controllers\Psp\Getdatapsp;
 use App\Controllers\Psp\Kaspsp;
+use App\Controllers\Psp\Neracapsp;
 
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
@@ -82,6 +83,8 @@ $routes->post('psp/bankpsp/deleteall', [Bankpsp::class, 'deleteAll']);
 $routes->resource('psp/bbpsp', [Bbpsp::class]);
 $routes->post('psp/bbpsp/data', [Bbpsp::class, 'showdata']);
 $routes->post('psp/bbpsp/ceksaldo', [Bbpsp::class, 'ceksaldo']);
+$routes->get('psp/neracapsp', [Neracapsp::class, 'index']);
+$routes->post('psp/neracapsp/data', [Neracapsp::class, 'showdata']);
 /*
  * --------------------------------------------------------------------
  * Additional Routing

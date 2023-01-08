@@ -43,7 +43,7 @@ class Filters extends BaseConfig
             'csrf' => [
                 'except' =>
                 [
-                    'noakunpsp', 'psp/akunpsp/data', 'psp/kaspsp/data', 'psp/bankpsp/data', 'psp/bbpsp/data', 'psp/bbpsp/ceksaldo',
+                    'noakunpsp', 'psp/akunpsp/data', 'psp/kaspsp/data', 'psp/bankpsp/data', 'psp/bbpsp/data', 'psp/bbpsp/ceksaldo', 'psp/neracapsp/data',
                 ],
             ],
             // 'invalidchars',

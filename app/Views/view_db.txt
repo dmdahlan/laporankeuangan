@@ -1,0 +1,16 @@
+v_reportneraca
+SELECT
+psp_transaksi.tgl_transaksi,
+psp_transaksi.akun_debet AS akun_no,
+psp_transaksi.debet,
+0 AS kredit
+FROM psp_transaksi
+WHERE psp_transaksi.deleted_at IS NULL
+UNION all
+SELECT
+psp_transaksi.tgl_transaksi,
+psp_transaksi.akun_kredit AS akun_no,
+0 AS debet,
+psp_transaksi.kredit
+FROM psp_transaksi
+WHERE psp_transaksi.deleted_at IS NULL

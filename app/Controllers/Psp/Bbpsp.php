@@ -32,9 +32,12 @@ class Bbpsp extends ResourceController
         $db = \Config\Database::connect();
         $model = new TransaksiModel();
         $akun = $this->request->getPost('noakun');
+        $tglawal    = $this->request->getPost('tglawal');
+        $tglakhir   = $this->request->getPost('tglakhir');
+
         $this->saldoawal = $db->table('psp_akun')->where('no_akun', $akun)->get()->getRow()->saldo_awal;
-        $data = $model->DataTableBukuBesar($akun);
-        $output = DataTable::of($data, $akun)
+        $data = $model->DataTableBukuBesar($akun, $tglawal, $tglakhir);
+        return DataTable::of($data, $akun)
             ->addNumbering('no')
             ->add('debet', function ($row) {
                 $debet = $row->akun_debet == $this->request->getPost('noakun') ? $row->debet : null;
@@ -59,7 +62,6 @@ class Bbpsp extends ResourceController
                 return rupiah($this->saldoawal);
             })
             ->toJson(true);
-        return $output;
     }
     public function ceksaldo()
     {
